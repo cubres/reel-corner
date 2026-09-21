@@ -1,0 +1,39 @@
+name: Build installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: dist:mac
+          - os: windows-latest
+            target: dist:win
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        working-directory: electron
+        run: npm install --no-audit --no-fund
+      - name: Build
+        working-directory: electron
+        run: npm run ${{ matrix.target }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reel-corner-${{ matrix.os }}
+          path: |
+            electron/dist/*.dmg
+            electron/dist/*.exe
+            electron/dist/*.zip
+          if-no-files-found: ignore

@@ -1,0 +1,51 @@
+{
+  "name": "reel-corner",
+  "productName": "Reel Corner",
+  "version": "1.0.0",
+  "description": "An always-on-top corner panel that plays Instagram Reels, driven by keyboard shortcuts.",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "sync": "node sync.js",
+    "start": "node sync.js && electron .",
+    "dist": "node sync.js && electron-builder",
+    "dist:win": "node sync.js && electron-builder --win",
+    "dist:mac": "node sync.js && electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.reelcorner.app",
+    "productName": "Reel Corner",
+    "files": [
+      "main.js",
+      "config.js",
+      "assets/**",
+      "bridge.js"
+    ],
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    }
+  }
+}

@@ -28,6 +28,18 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
+echo "generating Swift bridge from shared/bridge.js..."
+python3 - <<'GEN'
+import json
+js = open("shared/bridge.js").read()
+# JSON escaping is compatible with Swift string literals as long as non-ASCII stays
+# literal - Swift spells unicode escapes \u{...}, not \uXXXX.
+lit = json.dumps(js, ensure_ascii=False)
+open("src/Bridge.generated.swift", "w").write(
+    "// GENERATED from shared/bridge.js by build.sh - do not edit.\n"
+    "import Foundation\n\nlet reelBridgeJS = " + lit + "\n")
+GEN
+
 echo "compiling..."
 swiftc -O \
   -framework Cocoa -framework WebKit -framework Carbon \

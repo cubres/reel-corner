@@ -1,11 +1,18 @@
-import Foundation
+// The page logic for Reel Corner. Injected into the Instagram page on BOTH
+// platforms: the native macOS app compiles it in (build.sh generates a Swift file
+// from this exact text) and the Electron app injects it directly. One source, so a
+// fix to Instagram's markup lands on Windows and macOS at the same time.
+//
+// post() must work in either host: WKWebView gives us a message handler, Electron
+// listens to console output.
 
-// JavaScript injected into the Instagram page at document-end.
-// NOTE: deliberately contains no backslashes, so it survives a Swift multiline literal.
-let reelBridgeJS = """
 window.__rc = (function () {
   var T0 = performance.now();   // script injection, i.e. document-end
-  function post(m) { try { window.webkit.messageHandlers.rc.postMessage(String(m)); } catch (e) {} }
+  function post(m) {
+    var s = String(m);
+    try { window.webkit.messageHandlers.rc.postMessage(s); return; } catch (e) {}
+    try { console.log('[rc] ' + s); } catch (e) {}
+  }
 
   function labelOf(el) {
     var a = el.getAttribute && el.getAttribute('aria-label');
@@ -1247,4 +1254,3 @@ window.__rc = (function () {
     clean: function (on) { cleanOn = on; if (on) { injectCSS(); isolate(); fillVideo(); } else restoreAll(); }
   };
 })();
-"""

@@ -1,2 +1,5 @@
-# Build output
 *.app/
+src/Bridge.generated.swift
+electron/node_modules/
+electron/dist/
+electron/bridge.js
